@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import ru.netology.domain.Book;
 import ru.netology.domain.Product;
 import ru.netology.domain.Smartphone;
+import ru.netology.exception.AlreadyExistsException;
+import ru.netology.exception.NotFoundException;
 
 public class ProductRepositoryTest {
     ProductRepository repository = new ProductRepository();
@@ -119,5 +121,56 @@ public class ProductRepositoryTest {
         Assertions.assertArrayEquals(expected, actual);
     }
 
+    @Test
+    public void removeByIdProductTestNotFoundException() {
+        repository.saveProduct(book1);
+        repository.saveProduct(book2);
+        repository.saveProduct(book3);
+        repository.saveProduct(smartphone1);
+        repository.saveProduct(smartphone2);
+        repository.saveProduct(smartphone3);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            repository.removeByIdProduct(0);
+        });
+    }
+
+    @Test
+    public void removeByIdProductTestNotFoundExceptionNegative() {
+        repository.saveProduct(book1);
+        repository.saveProduct(book2);
+        repository.saveProduct(book3);
+        repository.saveProduct(smartphone1);
+        repository.saveProduct(smartphone2);
+        repository.saveProduct(smartphone3);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            repository.removeByIdProduct(-1);
+        });
+    }
+
+    @Test
+    public void removeByIdProductTestNotFoundExceptionNotIncoming() {
+        repository.saveProduct(book1);
+        repository.saveProduct(book3);
+        repository.saveProduct(smartphone1);
+        repository.saveProduct(smartphone3);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            repository.removeByIdProduct(02);
+        });
+    }
+
+    @Test
+    public void saveTestAlreadyExistsException() {
+        repository.saveProduct(book1);
+        repository.saveProduct(book3);
+        repository.saveProduct(smartphone1);
+        repository.saveProduct(smartphone3);
+
+        Assertions.assertThrows(AlreadyExistsException.class, () -> {
+            repository.saveProduct(book1);
+        });
+    }
 
 }
